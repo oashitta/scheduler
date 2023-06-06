@@ -11,6 +11,7 @@ import {
   getByText,
   render,
   waitForElement,
+  waitForElementToBeRemoved,
   fireEvent,
   prettyDOM,
   getAllByTestId,
@@ -43,7 +44,7 @@ describe("Application", () => {
   // making an async call using async/await.
   it("loads data, books an interview and reduces the spots remaining for the first day by 1", async () => {
     // const { getyByText } = render(<Application />);
-    const { container } = render(<Application />);
+    const { container, debug } = render(<Application />);
 
     await waitForElement(() => getByText(container, "Archie Cohen"));
     // console.log(prettyDOM(container));
@@ -66,5 +67,10 @@ describe("Application", () => {
     fireEvent.click(getByAltText(appointment, "Sylvia Palmer"));
 
     fireEvent.click(getByText(appointment, "Save"));
+    debug(appointment);
+    expect(getByText(appointment, "Saving")).toBeInTheDocument();
+
+    await waitForElementToBeRemoved(() => getByText(appointment, "Saving"));
+    expect(getByText(appointment, "Lydia Miller-Jones")).toBeInTheDocument();
   });
 });
