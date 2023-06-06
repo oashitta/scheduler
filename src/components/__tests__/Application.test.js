@@ -17,6 +17,7 @@ import {
   getAllByTestId,
   getByAltText,
   getByPlaceholderText,
+  queryByText,
 } from "@testing-library/react";
 
 /*
@@ -46,10 +47,11 @@ describe("Application", () => {
     // const { getyByText } = render(<Application />);
     const { container, debug } = render(<Application />);
 
+    // Async code, waiting for the container to load before searching for the name.
     await waitForElement(() => getByText(container, "Archie Cohen"));
     // console.log(prettyDOM(container));
 
-    // gets all appointments in the container
+    // gets all appointments in the container. id added to component.
     const appointments = getAllByTestId(container, "appointment");
     // console.log(prettyDOM(appointments));
 
@@ -67,10 +69,23 @@ describe("Application", () => {
     fireEvent.click(getByAltText(appointment, "Sylvia Palmer"));
 
     fireEvent.click(getByText(appointment, "Save"));
-    debug(appointment);
+    // debug(appointment);
     expect(getByText(appointment, "Saving")).toBeInTheDocument();
 
+    // checking to see that the name appears after saving.
     await waitForElementToBeRemoved(() => getByText(appointment, "Saving"));
     expect(getByText(appointment, "Lydia Miller-Jones")).toBeInTheDocument();
+
+    // alternate implementation of lines 76 & 77 - await waitForElement(() => getByText(appointment, "Lydia Miller-Jones"));
+
+    // finding the specific day node that contains the text "Monday" - Id added to daylist item component - data-testid="day"
+
+    const day = getAllByTestId(container, "day").find((day) =>
+      queryByText(day, "Monday")
+    );
+    // console.log(prettyDOM(day));
+
+    // check to see that the day with text "Monday" also has text "no spots remaining"
+    expect(getByText(day, "no spots remaining")).toBeInTheDocument();
   });
 });
